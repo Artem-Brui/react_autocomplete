@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import PeopleList from './components/PeopleList';
+import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
+  const [query, setQuery] = useState('');
+  const [filterQuery, setFilterQuery] = useState('');
+
   const { name, born, died } = peopleFromServer[0];
+
+  const applyFilter = useCallback(debounce(setFilterQuery, 500), []);
+
+  const filtredList = useMemo(() => {
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(filterQuery.toLowerCase()),
+    );
+  }, [filterQuery]);
+
+  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setQuery(e.target.value);
+    applyFilter(e.target.value);
+  };
 
   return (
     <div className="container">
@@ -15,44 +35,16 @@ export const App: React.FC = () => {
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <input
+              onChange={handleInputChange}
               type="text"
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
+          <PeopleList list={filtredList} />
         </div>
 
         <div
