@@ -4,13 +4,12 @@ import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
 
 interface ListProps {
-  delay: number;
   isListEmpty: (isEmpty: boolean) => void;
-  choisePerson: (pers: Person | null) => void;
+  choosePerson: (pers: Person | null) => void;
 }
 
 const PeopleList: React.FC<ListProps> = React.memo(
-  ({ delay = 300, isListEmpty, choisePerson }) => {
+  ({ isListEmpty, choosePerson }) => {
     const [query, setQuery] = useState('');
     const [filterQuery, setFilterQuery] = useState('');
     const [isListVisible, setIsListVisible] = useState(false);
@@ -29,13 +28,13 @@ const PeopleList: React.FC<ListProps> = React.memo(
       isListEmpty(!isMatched);
     }, [list, isListEmpty]);
 
-    const applyFilter = useCallback(debounce(setFilterQuery, delay), []);
+    const applyFilter = useCallback(debounce(setFilterQuery, 300), []);
 
     const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (
       e: React.ChangeEvent<HTMLInputElement>,
     ) => {
-      setQuery(e.target.value);
-      choisePerson(null);
+      setQuery(e.target.value.trim());
+      choosePerson(null);
       applyFilter(e.target.value);
     };
 
@@ -46,7 +45,7 @@ const PeopleList: React.FC<ListProps> = React.memo(
       const person = peopleFromServer.find(pers => pers.name === personName);
 
       if (person) {
-        choisePerson(person);
+        choosePerson(person);
         setIsListVisible(false);
       }
     };
@@ -68,10 +67,10 @@ const PeopleList: React.FC<ListProps> = React.memo(
         {isListVisible && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {list.map((person, i) => {
+              {list.map(person => {
                 return (
                   <div
-                    key={i}
+                    key={person.name}
                     className="dropdown-item"
                     data-cy="suggestion-item"
                   >

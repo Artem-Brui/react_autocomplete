@@ -1,14 +1,14 @@
 import { Person } from '../types/Person';
 
 interface Props {
-  choise: Person | null;
+  choice: Person | null;
 }
 
-const Title: React.FC<Props> = ({ choise }) => {
+const Title: React.FC<Props> = ({ choice }) => {
   let title = 'No selected person';
 
-  if (choise !== null) {
-    const { name, born, died } = choise;
+  if (choice !== null) {
+    const { name, born, died } = choice;
 
     title = `${name} (${born} - ${died})`;
   }

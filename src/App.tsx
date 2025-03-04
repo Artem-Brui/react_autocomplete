@@ -23,12 +23,8 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <Title choise={personToShow} />
-        <PeopleList
-          delay={500}
-          isListEmpty={showErrorMessage}
-          choisePerson={showPerson}
-        />
+        <Title choice={personToShow} />
+        <PeopleList isListEmpty={showErrorMessage} choosePerson={showPerson} />
         <ErrorMessage isVisible={isShowError} />
       </main>
     </div>
